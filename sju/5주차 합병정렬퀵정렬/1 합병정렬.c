@@ -29,59 +29,44 @@ int main() {
 		printf(" %d", list->elem);
 		list = list->next;
 	}
+
+	free(list);	//메모리 해제
 }
 
-void partition(ListNode* L, int k, ListNode** L1, ListNode** L2) {
+void partition(ListNode* L, int k, ListNode** L1, ListNode** L2) {	//리스트 분할
 	ListNode* temp = L;
 
-	*L1 = L;
+	*L1 = L;	//부리스트 L1
 	for (int i = 0; i < k / 2 - 1; i++) temp = temp->next;
-	*L2 = temp->next;
-	temp->next = NULL;
+	*L2 = temp->next;	//부리스트 L2를 크기 |L|-k로 만드는 과정
+	temp->next = NULL;	//부리스트 L1과 L2를 분할
 }
 
 ListNode* merge(ListNode** L1, ListNode** L2) {
-	ListNode* temp, * mergedList;
+	ListNode* mergedList = NULL;	//최종 merged된 리스트
 	ListNode* tempL1 = *L1;
 	ListNode* tempL2 = *L2;
 
-	if (tempL1->elem <= tempL2->elem) {
-		mergedList = tempL1;
-		tempL1 = tempL1->next;
-		temp = mergedList;
-	}
-
-	else {
-		mergedList = tempL2;
-		tempL2 = tempL2->next;
-		temp = mergedList;
-	}
-
-	//두 리스트의 요소 비교
-	while (tempL1 != NULL && tempL2 != NULL) {
-		if (tempL1->elem <= tempL2->elem) {
-			temp->next = tempL1;
+	while (tempL1 != NULL && tempL2 != NULL) {	//두 리스트 중 하나라도 널이 될 때까지
+		if (tempL1->elem <= tempL2->elem) {	//리스트 요소 비교
+			addList(&mergedList, tempL1->elem);	//최종 리스트에 더 작은 값 추가
 			tempL1 = tempL1->next;
-			temp = temp->next;
 		}
 
 		else {
-			temp->next = tempL2;
+			addList(&mergedList, tempL2->elem);
 			tempL2 = tempL2->next;
-			temp = temp->next;
 		}
 	}
 
 	//나머지 요소
 	while (tempL1 != NULL) {
-		temp->next = tempL1;
-		temp = tempL1;
+		addList(&mergedList, tempL1->elem);
 		tempL1 = tempL1->next;
 	}
 
 	while (tempL2 != NULL) {
-		temp->next = tempL2;
-		temp = tempL2;
+		addList(&mergedList, tempL2->elem);
 		tempL2 = tempL2->next;
 	}
 
@@ -95,12 +80,12 @@ void mergeSort(ListNode** L, int n) {
 	if (n > 1) {
 		partition(temp, n, &L1, &L2);	//분할
 
-		if (n % 2 == 0) {	//짝수 개일 경우
+		if (n % 2 == 0) {	//리스트 크기가 짝수일 경우
 			mergeSort(&L1, n / 2);
 			mergeSort(&L2, n / 2);
 		}
 
-		else {	//홀수 개일 경우
+		else {	//리스트 크기가 홀수일 경우
 			mergeSort(&L1, n / 2);
 			mergeSort(&L2, (n / 2) + 1);
 		}
@@ -112,8 +97,8 @@ void mergeSort(ListNode** L, int n) {
 void addList(ListNode** L, int value) {	//노드 추가
 	ListNode* temp = *L;
 	ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));	//새로운 노드 생성 후 할당
-	newNode->elem = value;
 	newNode->next = NULL;
+	newNode->elem = value;
 
 	if (*L == NULL) *L = newNode;	//리스트가 빈 리스트일 경우
 	else {
